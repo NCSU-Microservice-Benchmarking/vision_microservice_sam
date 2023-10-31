@@ -48,7 +48,7 @@ def detect():
     model.info()
 
     # Run inference
-    model('path/to/image.jpg')
+    results = model(image)
     
     # get the bounding boxes of the detected objects
     # boxes = results.xyxy[0].cpu().numpy()
@@ -60,7 +60,7 @@ def detect():
         # put the confidence value and category name on the image
         # image = cv2.putText(image,str(box[4]),(x1,y1),cv2.FONT_HERSHEY_SIMPLEX,1,(0,0,255),2)
     # convert image to a binary string
-    # image = cv2.imencode('.png', image)[1].tostring()
+    image = cv2.imencode('.png', image)[1].tostring()
     # send the image to the client as an png image encoded as a binary string
     return Response(image, mimetype='image/png')
 
