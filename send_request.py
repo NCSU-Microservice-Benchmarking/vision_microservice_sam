@@ -11,7 +11,7 @@ if __name__ == "__main__":
     # put the image in a multipart form
     files = {"image":image}
     # send a post request to the detect endpoint
-    response = requests.post(host+"/detect",files=files)
+    response = requests.post(host+"/detections",files=files)
     # check the response status code
     print(response.status_code)
     # save the image

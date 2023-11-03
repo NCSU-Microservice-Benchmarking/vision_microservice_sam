@@ -26,6 +26,7 @@ model.info()
 def greet():
     return("Hello")
 
+
 @app.route('/count_gpu')
 def countGPU():
         return str(torch.cuda.device_count())
