@@ -14,9 +14,6 @@ app = Flask(__name__)
 # Load a model
 model = SAM('sam_b.pt')
 
-# Display model information (optional)
-model.info()
-
 # initial the model
 # model = torch.hub.load('yolov5', 'custom', path='yolov5s.pt', source='local')
 # model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
@@ -34,9 +31,11 @@ def countGPU():
 @app.route('/detections',methods=['POST'])
 def detect():
     # get image from the request form
-    image = request.form.get('image')
+    image = request.files.get('image')
+    image = image.read()
     # convert image string to a numpy array
-    # image_buffer = bytes(image, 'utf-8')
+    nparr = np.fromstring(image, np.uint8)
+    image = cv2.imdecode(nparr, cv2.IMREAD_COLOR) # cv2.IMREAD_COLOR in OpenCV 3.1
     # image = np.frombuffer(image_buffer, np.uint8)
     # print(image.shape)
     # # image = request.files.get('image')
@@ -46,10 +45,10 @@ def detect():
     # image = cv2.imdecode(image, -1)
     # send the image to the model and get the result
     # Display model information (optional)
-    model.info()
-
     # Run inference
     results = model(image)
+    for r in results:
+        image = r.plot()  # plot a BGR numpy array of predictions
     
     # get the bounding boxes of the detected objects
     # boxes = results.xyxy[0].cpu().numpy()
