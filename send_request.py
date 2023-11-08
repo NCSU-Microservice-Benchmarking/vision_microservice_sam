@@ -10,7 +10,7 @@ if __name__ == "__main__":
     # put the image and mask in a multipart/form-data
     files = {'image': image} 
     # send a post request to the detect endpoint
-    response = requests.post(host+"/detections", files=files) # "/detections" is the API for YOLO. Here we want to let the test server receive an api from a get requests's parameter.
+    response = requests.post(host+"/", files=files) # "/detections" is the API for YOLO. Here we want to let the test server receive an api from a get requests's parameter.
     # the API, as far as I remember, includes "/" and "detections".
     # save response as a png image
     open('sam_results.png', 'wb').write(response.content)

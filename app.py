@@ -28,7 +28,7 @@ def greet():
 def countGPU():
         return str(torch.cuda.device_count())
 
-@app.route('/post',methods=['POST'])
+@app.route('/',methods=['POST'])
 def detect():
     # get image from the request form
     image = request.files.get('image')
