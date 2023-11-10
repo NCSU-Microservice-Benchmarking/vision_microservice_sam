@@ -6,10 +6,13 @@ import numpy as np
 from flask import request
 from flask import Flask
 from flask import Response
+from flask_cors import CORS, cross_origin
 import os
 import requests
 
 app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 # Load a model
 model = SAM('sam_b.pt')
