@@ -6,10 +6,13 @@ import numpy as np
 from flask import request
 from flask import Flask
 from flask import Response
+from flask_cors import CORS, cross_origin
 import os
 import requests
 
 app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 # Load a model
 model = YOLO('yolov8n-seg.pt')
@@ -28,7 +31,7 @@ def greet():
 def countGPU():
         return str(torch.cuda.device_count())
 
-@app.route('/detections',methods=['POST'])
+@app.route('/',methods=['POST'])
 def detect():
     # get image from the request form
     image = request.files.get('image')
