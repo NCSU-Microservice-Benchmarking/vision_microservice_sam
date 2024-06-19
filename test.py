@@ -39,28 +39,28 @@ for img_name in os.listdir(input_dir):
             clss = boxes.data[:, 5]
             bounding_boxes = boxes.xyxy    
             # Get indices of results where class is 0 (people in COCO)
-            car_indices = torch.where((clss == 2) | (clss == 5) | (clss == 8))[0]  # [0] to extract tensor indices
-            # Use these indices to extract the relevant masks
-            car_masks = masks[car_indices]
-    
-            for i in range(len(car_masks)):
-                # Crop the individual object from the frame
-                instance_bbox = bounding_boxes[car_indices[i]].cpu().numpy()
-                # Crop the object from the frame
-                mask = car_masks[i]
-            
-                print(f"Mask {i} shape: {mask.shape}")
-                # Scale for visualizing results
-                var = mask.byte() * 1
-                # will need to check the proper indices
-                pixels = np.sum(var) /( img.shape[0] * img.shape[1])
-                if pixels > 0.5:
-                    people_mask = mask.byte() * 255  # Convert to uint8 before multiplying by 255
-                    cv2.imwrite(str(model.predictor.save_dir) + img_path + str + '.png', people_mask.cpu().numpy())
-                
-                # people_mask = mask.byte() * 255  # Convert to uint8 before multiplying by 255
-                # print(f"Scaled mask {i} shape: {people_mask.shape}")
-                # Save to file
-                # cv2.imwrite(str(model.predictor.save_dir) +'/merged_segs' + str(i) + '.png', people_mask.cpu().numpy())
+            car_indices = torch.where((clss == 2) | (clss == 6) | (clss == 7))[0]  # [0] to extract tensor indices
+             # Calculate areas of bounding boxes
+            areas = (bounding_boxes[car_indices][:, 2] - bounding_boxes[car_indices][:, 0]) * \
+                    (bounding_boxes[car_indices][:, 3] - bounding_boxes[car_indices][:, 1])
+
+            # Get the index of the largest bounding box
+            largest_idx = car_indices[torch.argmax(areas)]
+
+            # Extract the relevant mask for the largest vehicle
+            largest_mask = masks[largest_idx]
+            largest_bbox = bounding_boxes[largest_idx].cpu().numpy()
+
+            # Process the mask of the largest vehicle
+            print(f"Largest mask shape: {largest_mask.shape}")
+
+            # Scale for visualizing results
+            vehicle_mask = largest_mask.byte() * 255  # Convert to uint8 before multiplying by 255
+            print(f"Scaled mask shape: {vehicle_mask.shape}")
+
+            # Save to file
+            save_path = os.path.join(output_dir, f"{img_name}_largest_vehicle.png")
+            cv2.imwrite(save_path, vehicle_mask.cpu().numpy())
+            print(f"Saved largest vehicle mask to: {save_path}")
     except Exception as e:
         print(f"An error occurred while processing {img_path}: {e}")
