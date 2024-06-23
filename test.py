@@ -5,7 +5,7 @@ import torch
 import os
 
 # Change this to the correct path
-input_dir = r'train'
+input_dir = r'training_images'
 
 # Initialize the model once, outside the loop
 model = YOLO('yolov8m-seg.pt')
@@ -59,7 +59,7 @@ for img_name in os.listdir(input_dir):
             print(f"Scaled mask shape: {vehicle_mask.shape}")
 
             # Save to file
-            save_path = os.path.join(output_dir, f"{img_name}_largest_vehicle.png")
+            save_path = os.path.join(output_dir, f"{img_name}")
             cv2.imwrite(save_path, vehicle_mask.cpu().numpy())
             print(f"Saved largest vehicle mask to: {save_path}")
     except Exception as e:
