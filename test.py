@@ -12,8 +12,18 @@ model = YOLO('yolov8m-seg.pt')
 model.predict(source="0", show=True, stream=True, classes=[2, 6, 7])  # [0, 3, 5] for multiple classes
 
 # Ensure the output directory exists
-output_dir = os.path.join('merged_segs')
-os.makedirs(output_dir, exist_ok=True)
+train_dir = os.path.join('train')
+os.makedirs(train_dir, exist_ok=True)
+
+# Ensure the output directory exists
+val_dir = os.path.join('val')
+os.makedirs(val_dir, exist_ok=True)
+
+# Ensure the output directory exists
+test_dir = os.path.join('test')
+os.makedirs(test_dir, exist_ok=True)
+
+SPLIT_RATIO = [0.8, 0.1, 0.1]
 
 # Loop through all images in the directory
 for img_name in os.listdir(input_dir):
@@ -58,8 +68,19 @@ for img_name in os.listdir(input_dir):
             vehicle_mask = largest_mask.byte() * 255  # Convert to uint8 before multiplying by 255
             print(f"Scaled mask shape: {vehicle_mask.shape}")
 
+            split = np.random.choice(['train', 'val', 'test'], p=SPLIT_RATIO)
+
             # Save to file
-            save_path = os.path.join(output_dir, f"{img_name}")
+        if split == 'train':
+            save_path = os.path.join(train_dir, f"{os.path.splitext(img_name)[0]}.png")
+            cv2.imwrite(save_path, vehicle_mask.cpu().numpy())
+            print(f"Saved largest vehicle mask to: {save_path}")
+        elif split == 'val':
+            save_path = os.path.join(val_dir, f"{os.path.splitext(img_name)[0]}.png")
+            cv2.imwrite(save_path, vehicle_mask.cpu().numpy())
+            print(f"Saved largest vehicle mask to: {save_path}")
+        else:
+            save_path = os.path.join(test_dir, f"{os.path.splitext(img_name)[0]}.png")
             cv2.imwrite(save_path, vehicle_mask.cpu().numpy())
             print(f"Saved largest vehicle mask to: {save_path}")
     except Exception as e:
